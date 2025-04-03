@@ -2497,5 +2497,150 @@
       width: 4rem;
       height: 4rem;
     }
+
+
+
+
+
+    @media (max-width: 768px) {
+      .navbar {
+          padding: 1rem 0;
+      }
+  
+      .nav-menu {
+          position: fixed;
+          top: 70px; /* Adjust based on your navbar height */
+          left: -100%;
+          width: 100%;
+          height: calc(100vh - 70px);
+          background-color: var(--color-dark);
+          flex-direction: column;
+          align-items: center;
+          transition: 0.3s;
+          overflow-y: auto;
+      }
+  
+      .nav-menu.active {
+          left: 0;
+      }
+  
+      .nav-links {
+          margin: 1.5rem 0;
+      }
+  
+      .menu-toggle {
+          display: block;
+      }
+  
+      .menu-toggle .bar {
+          width: 25px;
+          height: 3px;
+          background-color: var(--color-light);
+          margin: 5px auto;
+          transition: 0.3s;
+      }
+  
+      .menu-toggle.active .bar:nth-child(1) {
+          transform: rotate(-45deg) translate(-5px, 6px);
+      }
+  
+      .menu-toggle.active .bar:nth-child(2) {
+          opacity: 0;
+      }
+  
+      .menu-toggle.active .bar:nth-child(3) {
+          transform: rotate(45deg) translate(-5px, -6px);
+      }
+  }
+
+  
+
+
+  @media (max-width: 768px) {
+    .logo-social-wrapper {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .social-nav {
+        display: none; /* Hide social icons on mobile if space is limited */
+    }
+
+    /* If you want to keep social icons, use this instead of display: none; */
+    .social-nav {
+        position: absolute;
+        right: 60px; /* Adjust based on your layout */
+    }
+
+    .social-nav a {
+        font-size: 1.4rem; /* Smaller icons for mobile */
+    }
+}
+
+
+
+
+
+
+@media (max-width: 768px) {
+  .container {
+      padding: 0 1rem;
+  }
+
+  h1 {
+      font-size: 2.5rem;
+  }
+
+  h2 {
+      font-size: 2rem;
+  }
+
+  .hero-content {
+      text-align: center;
+  }
+
+  .hero-btns {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .hero-btns .btn {
+      width: 100%;
+      margin-bottom: 1rem;
+  }
+
+  .about-content, 
+  .skills-grid, 
+  .projects-grid, 
+  .contact-content {
+      grid-template-columns: 1fr;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   }
   
