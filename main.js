@@ -12,11 +12,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-links');
     const sections = document.querySelectorAll('section');
     
+    const scrollProgress = document.querySelector('.scroll-progress');
+
     function updateNavbar() {
       if (window.scrollY > 20) {
         navbar.classList.add('scrolled');
       } else {
         navbar.classList.remove('scrolled');
+      }
+
+      if (scrollProgress) {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        scrollProgress.style.width = `${Math.min(progress, 100)}%`;
       }
       
       // Update active nav link based on scroll position
@@ -120,7 +129,6 @@ document.querySelectorAll('.tab-btn').forEach(button => {
       // Show the target content
       document.getElementById(tabTarget).classList.add('active');
       
-      console.log('Tab clicked:', tabTarget); // Add this for debugging
     });
   });
   
@@ -151,37 +159,78 @@ achievementTabs.forEach(tab => {
 });
 
     
-    // Project Filtering
+    // Project Filtering + Search
 const filterButtons = document.querySelectorAll('.filter-btn');
 const projectCards = document.querySelectorAll('.project-card');
+const projectSearchInput = document.getElementById('project-search');
+const projectsResults = document.getElementById('projects-results');
+
+let activeFilter = 'all';
+
+function updateProjectResults(visibleCount) {
+  if (!projectsResults) return;
+
+  if (projectSearchInput && projectSearchInput.value.trim()) {
+    projectsResults.textContent = `Found ${visibleCount} matching project${visibleCount === 1 ? '' : 's'}`;
+  } else {
+    projectsResults.textContent = activeFilter === 'all'
+      ? `Showing all ${visibleCount} projects`
+      : `Showing ${visibleCount} ${activeFilter} project${visibleCount === 1 ? '' : 's'}`;
+  }
+}
+
+function applyProjectFilters() {
+  const query = projectSearchInput ? projectSearchInput.value.trim().toLowerCase() : '';
+  let visibleCount = 0;
+
+  projectCards.forEach(card => {
+    const categories = card.getAttribute('data-category') || '';
+    const cardText = card.textContent.toLowerCase();
+    const matchesFilter = activeFilter === 'all' || categories.includes(activeFilter);
+    const matchesQuery = !query || cardText.includes(query);
+
+    if (matchesFilter && matchesQuery) {
+      card.style.display = 'block';
+      visibleCount += 1;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  updateProjectResults(visibleCount);
+}
 
 filterButtons.forEach(button => {
   button.addEventListener('click', function() {
-    const filterValue = this.getAttribute('data-filter');
-    console.log('Filter clicked:', filterValue); // Debugging
-    
-    // Remove active class from all buttons
+    activeFilter = this.getAttribute('data-filter');
+
     filterButtons.forEach(btn => {
       btn.classList.remove('active');
     });
-    
-    // Add active class to clicked button
+
     this.classList.add('active');
-    
-    // Show/hide projects based on filter
-    projectCards.forEach(card => {
-      if (filterValue === 'all') {
-        card.style.display = 'block';
-      } else {
-        if (card.getAttribute('data-category').includes(filterValue)) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
-      }
-    });
+    applyProjectFilters();
   });
 });
+
+if (projectSearchInput) {
+  projectSearchInput.addEventListener('input', applyProjectFilters);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === '/' && document.activeElement !== projectSearchInput) {
+      event.preventDefault();
+      projectSearchInput.focus();
+    }
+
+    if (event.key === 'Escape' && document.activeElement === projectSearchInput) {
+      projectSearchInput.value = '';
+      applyProjectFilters();
+      projectSearchInput.blur();
+    }
+  });
+}
+
+applyProjectFilters();
 
     /**
      * "View All" Buttons
@@ -283,9 +332,6 @@ filterButtons.forEach(button => {
     const contactForm = document.getElementById('contact-form');
     
     if (contactForm) {
-      // Set up the form to use Formspree
-      contactForm.action = "https://formspree.io/f/ganeshprasathagp@gmail.com";
-      
       contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -435,21 +481,41 @@ filterButtons.forEach(button => {
      */
     const backToTopBtn = document.querySelector('.back-to-top');
     
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 700) {
-        backToTopBtn.classList.add('active');
-      } else {
-        backToTopBtn.classList.remove('active');
-      }
-    });
-    
-    backToTopBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
+    if (backToTopBtn) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 700) {
+          backToTopBtn.classList.add('active');
+        } else {
+          backToTopBtn.classList.remove('active');
+        }
       });
-    });
+
+      backToTopBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    }
+
+    const copyEmailBtn = document.querySelector('.copy-email-btn');
+    if (copyEmailBtn) {
+      copyEmailBtn.addEventListener('click', async function() {
+        const email = this.getAttribute('data-email');
+
+        try {
+          await navigator.clipboard.writeText(email);
+          this.textContent = 'Copied!';
+        } catch {
+          this.textContent = email;
+        }
+
+        setTimeout(() => {
+          this.textContent = 'Copy Email';
+        }, 1800);
+      });
+    }
     
     /**
      * Smooth Scrolling for Anchor Links
@@ -505,6 +571,22 @@ filterButtons.forEach(button => {
   
 
 
+
+
+    const currentYear = document.getElementById('current-year');
+    const lastUpdated = document.getElementById('last-updated');
+
+    if (currentYear) {
+      currentYear.textContent = new Date().getFullYear();
+    }
+
+    if (lastUpdated) {
+      lastUpdated.textContent = new Date(document.lastModified).toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
 
     // Track page view on load
     trackPageView();
